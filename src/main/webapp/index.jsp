@@ -1,7 +1,7 @@
 <html>
 <body>
 
-<%@ page import= "MonitoredLongValue.class" %>
+<%@ page import= "com.custardsource.parfait.MonitorLongValue" %>
 <%
  class FileIndexer {
 private final MonitoredLongValue done =
