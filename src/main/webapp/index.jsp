@@ -6,7 +6,6 @@
 </html>
  
   <%@ page import = "com.custardsource.parfait.*" %>
-  <%@ page import = "javax.measure.unit.*" %>
 
   <%class FileIndexer {
 	 private final MonitoredLongValue done = 
@@ -14,8 +13,8 @@
 	 "aconex.indexes.time",
 	 "Time spend indexing",
 	 MonitorableRegistry.DEFAULT_REGISTRY,
-	
-	 0L, 
+	 // injection = better!
+	 0L, // initial value
 	 SI.NANO(SI.SECOND));
 
 }
