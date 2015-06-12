@@ -11,20 +11,32 @@
   <%@ page import= "com.custardsource.parfait.dxm.PcpWriter" %>
 <%@ page import= "com.custardsource.parfait.dxm.semantics.*" %>
 <%@ page import= "com.custardsource.parfait.dxm.semantics.PcpDimensionSet" %>
+<%@ page import= "com.custardsource.parfait.pcp.PcpMonitorBridge" %>
+<%@ page import= "com.custardsource.parfait.pcp.*" %>
 <%@ page import= "java.io.File" %>
  
   <%class FileIndexer {
-	 private final MonitoredLongValue done = 
+	 public  final MonitoredLongValue done = 
 	  new  MonitoredLongValue(
 	 "aconex.indexes.time",
 	 "Time spend indexing",
 	 MonitorableRegistry.DEFAULT_REGISTRY,
 	 
-	 0L, 
+	 1L, 
 	 SI.NANO(SI.SECOND));
-
-}
-  PcpMmvWriter bridge=new PcpMmvWriter("java",IdentifierSourceSet.DEFAULT_SET);
-  bridge.addMetric(MetricName.parse("sheep[baabaablack].bagsfull.count"), Semantics.COUNTER,Unit.ONE.times(1000), 3);
+  
+  }
+  PcpMmvWriter bridge=new PcpMmvWriter("mmvname",IdentifierSourceSet.DEFAULT_SET);
+  PcpMonitorBridge bridge1 = new PcpMonitorBridge(bridge, MetricNameMapper.PASSTHROUGH_MAPPER, new MetricDescriptionTextSource(), new EmptyTextSource());
+ // MonitoringView monitoringView;
+ //monitoringView.startMonitoring(done);
+  bridge.addMetric(MetricName.parse("aconex.indexes.time"), Semantics.COUNTER,Unit.ONE.times(1000), 7);
   bridge.start();
+  try {
+	    Thread.sleep(5000);                 //1000 milliseconds is one second.
+	} catch(InterruptedException ex) {
+	    Thread.currentThread().interrupt();
+	}
+  bridge.updateMetric(MetricName.parse("aconex.indexes.time"), 3);
+  
   %>
