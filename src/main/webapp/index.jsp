@@ -33,9 +33,9 @@
   coll.add(obj.done);  
   MonitoringView monitoringView;
  // monitoringView.startMonitoring(coll); ERROR
-  bridge.addMetric(MetricName.parse("aconex.indexes.time"), Semantics.INSTANT,Unit.ONE.times(1000), 7);
+  bridge.addMetric(MetricName.parse("visualiq.ums.app.sample"), Semantics.INSTANT,Unit.ONE.times(1000), 7);
   bridge.start();
  
-  bridge.updateMetric(MetricName.parse("aconex.indexes.time"), 3);
+  bridge.updateMetric(MetricName.parse("visualiq.ums.app.sample"), 3);
   
   %>
