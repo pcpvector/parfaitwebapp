@@ -27,6 +27,7 @@
 					 SI.NANO(SI.SECOND)); 
   %>
   <% 
+  
   done.inc();
   out.println(done.get());
   
@@ -34,11 +35,16 @@
   PcpMonitorBridge bridge1 = new PcpMonitorBridge(bridge, MetricNameMapper.PASSTHROUGH_MAPPER, new MetricDescriptionTextSource(), new EmptyTextSource());
   Collection<Monitorable<?>> coll = new ArrayList<Monitorable<?>>();
   coll.add(done);  
-  MonitoringView monitoringView=new MonitoringView();  //ERROR
- monitoringView.startMonitoring(coll);   
-  bridge.addMetric(MetricName.parse("visualiq.ums.app.sample"), Semantics.INSTANT,Unit.ONE.times(1000), 7);
-  bridge.start();
+  //MonitoringView monitoringView=new PcpMonitorBridge();  //ERROR
+ bridge1.startMonitoring(coll);   
+  
+  
+  //Not required...  PcpMonitorBridge takes care of it now
+  //bridge.addMetric(MetricName.parse("visualiq.ums.app.sample"), Semantics.INSTANT,Unit.ONE.times(1000), 7);
+  //bridge.start();
+  //bridge.updateMetric(MetricName.parse("visualiq.ums.app.sample"), done.get());
  
-  bridge.updateMetric(MetricName.parse("visualiq.ums.app.sample"), done.get());
+ 
+  
   
   %>
