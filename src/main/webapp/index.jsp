@@ -4,7 +4,7 @@
 <h2>Hello World!</h2>
 </body>
 </html>
- 
+ <meta http-equiv="refresh" content="5">
 <%@ page import = "com.custardsource.parfait.*" %>
 <%@ page import = "javax.measure.unit.*" %>
 <%@ page import= "com.custardsource.parfait.dxm.*" %>
@@ -25,17 +25,18 @@
 					 SI.NANO(SI.SECOND)); 
   %>
   <% 
-  
+  done.inc();
+  out.println(done.get());
   
   PcpMmvWriter bridge=new PcpMmvWriter("mmvname",IdentifierSourceSet.DEFAULT_SET);
   PcpMonitorBridge bridge1 = new PcpMonitorBridge(bridge, MetricNameMapper.PASSTHROUGH_MAPPER, new MetricDescriptionTextSource(), new EmptyTextSource());
   List<MonitoredLongValue> coll = new ArrayList<MonitoredLongValue>();
   coll.add(done);  
   MonitoringView monitoringView;
-  //monitoringView.startMonitoring(coll);   //ERROR
+ // monitoringView.startMonitoring(coll);   //ERROR
   bridge.addMetric(MetricName.parse("visualiq.ums.app.sample"), Semantics.INSTANT,Unit.ONE.times(1000), 7);
   bridge.start();
  
-  bridge.updateMetric(MetricName.parse("visualiq.ums.app.sample"), 3);
+  bridge.updateMetric(MetricName.parse("visualiq.ums.app.sample"), done.get());
   
   %>
