@@ -13,6 +13,8 @@
 <%@ page import= "com.custardsource.parfait.dxm.semantics.PcpDimensionSet" %>
 <%@ page import= "com.custardsource.parfait.pcp.PcpMonitorBridge" %>
 <%@ page import= "com.custardsource.parfait.pcp.*" %>
+<%@ page import= "com.custardsource.parfait.Monitorable" %>
+<%@ page import= "com.custardsource.parfait.MonitoringView" %>
 <%@ page import= "java.io.File" %>
 <%@ page import= "java.util.*" %>
   <%! static MonitoredLongValue done = 
@@ -30,10 +32,10 @@
   
   PcpMmvWriter bridge=new PcpMmvWriter("mmvname",IdentifierSourceSet.DEFAULT_SET);
   PcpMonitorBridge bridge1 = new PcpMonitorBridge(bridge, MetricNameMapper.PASSTHROUGH_MAPPER, new MetricDescriptionTextSource(), new EmptyTextSource());
-  List<MonitoredLongValue> coll = new ArrayList<MonitoredLongValue>();
+  Collection<Monitorable<?>> coll = new ArrayList<Monitorable<?>>();
   coll.add(done);  
-  MonitoringView monitoringView;
- // monitoringView.startMonitoring(coll);   //ERROR
+  MonitoringView monitoringView=new MonitoringView();  //ERROR
+ monitoringView.startMonitoring(coll);   
   bridge.addMetric(MetricName.parse("visualiq.ums.app.sample"), Semantics.INSTANT,Unit.ONE.times(1000), 7);
   bridge.start();
  
