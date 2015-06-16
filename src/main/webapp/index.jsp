@@ -35,7 +35,7 @@
   PcpMonitorBridge bridge1 = new PcpMonitorBridge(bridge, MetricNameMapper.PASSTHROUGH_MAPPER, new MetricDescriptionTextSource(), new EmptyTextSource());
   Collection<Monitorable<?>> coll = new ArrayList<Monitorable<?>>();
   coll.add(done);  
-  //MonitoringView monitoringView=new PcpMonitorBridge();  //ERROR
+  
  bridge1.startMonitoring(coll);   
   
   
