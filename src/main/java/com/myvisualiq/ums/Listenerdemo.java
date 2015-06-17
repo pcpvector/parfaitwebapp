@@ -1,4 +1,4 @@
-package com.rahul;
+package com.myvisualiq.ums;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +9,7 @@ import javax.servlet.ServletContextListener;
 
 import com.custardsource.parfait.Monitorable;
 import com.custardsource.parfait.MonitorableRegistry;
+import com.custardsource.parfait.MonitoredIntValue;
 import com.custardsource.parfait.MonitoredLongValue;
 import com.custardsource.parfait.dxm.IdentifierSourceSet;
 import com.custardsource.parfait.dxm.PcpMmvWriter;
@@ -27,7 +28,15 @@ public class Listenerdemo implements ServletContextListener {
 						 
 						 1L, 
 						 SI.NANO(SI.SECOND)); 
-	 PcpMmvWriter bridge=new PcpMmvWriter("mmvname",IdentifierSourceSet.DEFAULT_SET);
+	 public static MonitoredIntValue done2 = 
+			  new  MonitoredIntValue(
+						 "visualiq.ums.app.dec",
+						 "Decrement Counter",
+						 MonitorableRegistry.DEFAULT_REGISTRY,
+						 
+						 100, 
+						 SI.SECOND); 
+	 PcpMmvWriter bridge=new PcpMmvWriter("IQ",IdentifierSourceSet.DEFAULT_SET);
 	 PcpMonitorBridge bridge1 = new PcpMonitorBridge(bridge, MetricNameMapper.PASSTHROUGH_MAPPER, new MetricDescriptionTextSource(), new EmptyTextSource());
 	 Collection<Monitorable<?>> coll = new ArrayList<Monitorable<?>>();
 	 
@@ -40,6 +49,7 @@ public class Listenerdemo implements ServletContextListener {
 		// TODO Auto-generated method stub
 		
 		 coll.add(done);
+		 coll.add(done2);
 		 bridge1.startMonitoring(coll);   
 		 
 	}
