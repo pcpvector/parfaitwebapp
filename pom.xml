@@ -54,8 +54,11 @@
 	<artifactId>unit-api</artifactId>
 	<version>0.8-RC2</version>
 </dependency>
-
-    
+<dependency>
+	<groupId>org.slf4j</groupId>
+	<artifactId>slf4j-log4j12</artifactId>
+	<version>1.7.12</version>
+</dependency>
   </dependencies>
   <build>
     <finalName>SimpleApp</finalName>
