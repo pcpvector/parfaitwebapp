@@ -28,10 +28,15 @@ import com.custardsource.parfait.pcp.EmptyTextSource;
 import com.custardsource.parfait.pcp.MetricDescriptionTextSource;
 import com.custardsource.parfait.pcp.MetricNameMapper;
 import com.custardsource.parfait.pcp.PcpMonitorBridge;
+import com.custardsource.parfait.timing.EventMetricCollector;
+import com.custardsource.parfait.timing.EventTimer;
 import com.custardsource.parfait.timing.ThreadMetric;
+import com.custardsource.parfait.timing.ThreadMetricSuite;
+import com.custardsource.parfait.timing.Timeable;
 
 public class Listenerdemo implements ServletContextListener {
-	
+	 private static final boolean enableCpuCollection = true;
+		private static final boolean enableContentionCollection = false;
 	 public static MonitoredLongValue done = 
 			  new  MonitoredLongValue(
 						 "visualiq.ums.app.sample",
@@ -51,7 +56,10 @@ public class Listenerdemo implements ServletContextListener {
 	 PcpMmvWriter bridge=new PcpMmvWriter("IQ",IdentifierSourceSet.DEFAULT_SET);
 	 PcpMonitorBridge bridge1 = new PcpMonitorBridge(bridge, MetricNameMapper.PASSTHROUGH_MAPPER, new MetricDescriptionTextSource(), new EmptyTextSource());
 	 Collection<Monitorable<?>> coll = new ArrayList<Monitorable<?>>();
+	 public static String eventGroup ="event";
 	 public static Statement st;
+	 public static EventMetricCollector evColl;
+	 public ThreadMetricSuite threadMetricSuite=ThreadMetricSuite.blank();
 	public void contextDestroyed(ServletContextEvent arg0) {
 		// TODO Auto-generated method stub
 		bridge1.stopMonitoring(coll);
@@ -72,6 +80,28 @@ public class Listenerdemo implements ServletContextListener {
 		    
 			ParfaitDataSource parfaitDataSource=new ParfaitDataSource(ds); 
 		    Collection<ThreadMetric> jdbccoll=parfaitDataSource.getThreadMetrics();
+		    parfaitDataSource.setLogWriter(parfaitDataSource.getLogWriter());
+		    threadMetricSuite.addAllMetrics(jdbccoll);
+		    EventTimer eventTimer=new EventTimer("viqdemo", MonitorableRegistry.DEFAULT_REGISTRY, threadMetricSuite, enableCpuCollection, enableContentionCollection);
+		    eventTimer.registerMetric(eventGroup);
+		    EventMetricCollector evColl=eventTimer.getCollector();
+		    
+		    evColl.startTiming(eventGroup, eventGroup);
+		    
+		   // Timeable t=;
+		   // t.setEventTimer(eventTimer);
+		    
+		    // Creates metrics, and injects the EventTimer into the Timeable
+		    	   // so it can access it later
+		    	//   eventTimer.registerTimeable(t, "someSuitableNameForT");
+		    
+            
+		    //eventTimer.registerTimeable(t, "someSuitableNameForT");
+		     
+		    
+		    coll.add(done);
+			coll.add(done2);
+			bridge1.startMonitoring(coll);   
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -80,9 +110,7 @@ public class Listenerdemo implements ServletContextListener {
 			e.printStackTrace();
 		}
 
-		 coll.add(done);
-		 coll.add(done2);
-		 bridge1.startMonitoring(coll);   
+		 
 		 
 	}
 	
