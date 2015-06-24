@@ -62,7 +62,7 @@ public class Listenerdemo implements ServletContextListener {
 						 SI.SECOND); 
 	 PcpMmvWriter bridge=new PcpMmvWriter("IQ",IdentifierSourceSet.DEFAULT_SET);
 	 PcpMonitorBridge bridge1 = new PcpMonitorBridge(bridge, MetricNameMapper.PASSTHROUGH_MAPPER, new MetricDescriptionTextSource(), new EmptyTextSource());
-	 Collection<Monitorable<?>> coll = new ArrayList<Monitorable<?>>();
+	 //Collection<Monitorable<?>> coll = new ArrayList<Monitorable<?>>();
 	 public static String eventGroup ="event";
 	 public static Statement st;
 	 public static EventMetricCollector evColl;
@@ -73,7 +73,7 @@ public class Listenerdemo implements ServletContextListener {
 	    public static final Object LOCK = new Object();
 	public void contextDestroyed(ServletContextEvent arg0) {
 		// TODO Auto-generated method stub
-		bridge1.stopMonitoring(coll);
+		bridge1.stopMonitoring(MonitorableRegistry.DEFAULT_REGISTRY.getMonitorables());
 	}
 
 	public void contextInitialized(ServletContextEvent arg0) {
@@ -81,8 +81,8 @@ public class Listenerdemo implements ServletContextListener {
 		BasicConfigurator.configure();
 		Context initContext;
 		DataSource ds;
-		coll.add(done);
-		coll.add(done2);
+		//coll.add(done);
+		//coll.add(done2);
 		//bridge1.startMonitoring(coll);
 		
 		try {
