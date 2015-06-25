@@ -100,10 +100,10 @@ public class Listenerdemo implements ServletContextListener {
 		    Collection<ThreadMetric> jdbccoll=parfaitDataSource.getThreadMetrics();
 		    parfaitDataSource.setLogWriter(parfaitDataSource.getLogWriter());
 		    threadMetricSuite.addAllMetrics(jdbccoll);
-		//    threadMetricSuite.addMetric(StandardThreadMetrics.CLOCK_TIME);
-		//    threadMetricSuite.addMetric(StandardThreadMetrics.BLOCKED_TIME);
-		 //   threadMetricSuite.addMetric(StandardThreadMetrics.WAITED_TIME);
-		//    threadMetricSuite.addMetric(StandardThreadMetrics.USER_CPU_TIME);
+		    threadMetricSuite.addMetric(StandardThreadMetrics.CLOCK_TIME);
+		    threadMetricSuite.addMetric(StandardThreadMetrics.BLOCKED_TIME);
+		    threadMetricSuite.addMetric(StandardThreadMetrics.WAITED_TIME);
+		    threadMetricSuite.addMetric(StandardThreadMetrics.USER_CPU_TIME);
 		    EventTimer eventTimer=new EventTimer("viqdemo", MonitorableRegistry.DEFAULT_REGISTRY, threadMetricSuite, enableCpuCollection, enableContentionCollection);
 		    //eventTimer.registerMetric(eventGroup);
 		   // EventMetricCollector evColl=eventTimer.getCollector();
@@ -116,8 +116,8 @@ public class Listenerdemo implements ServletContextListener {
 	        CheckoutBuyer buyer = new CheckoutBuyer(context);
 	        sender.setEventTimer(eventTimer);
 	        buyer.setEventTimer(eventTimer);
-	        eventTimer.registerTimeable(sender, "sendEmail7");
-	        eventTimer.registerTimeable(buyer, "buySomething9");
+	        eventTimer.registerTimeable(sender, "insert");
+	        eventTimer.registerTimeable(buyer, "select");
 
 	        Thread t1 = new Thread(sender);
 	        Thread t2 = new Thread(buyer);
@@ -176,8 +176,7 @@ public class Listenerdemo implements ServletContextListener {
             for (int i = 1; i < 30; i++) {
                 try {
                 	
-                    context.put("Name", randomName());
-                    context.put("Company", randomCompany());
+                 
                     collector.startTiming(this, action);
                    
                     doJob(i);
@@ -186,31 +185,20 @@ public class Listenerdemo implements ServletContextListener {
                     collector.stopTiming();
                     collector.resumeAfterForward();
                     collector.stopTiming();
-                    
-                    context.remove("Name");
-                    context.remove("Company");
+                   
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
         }
 
-        private String randomCompany() {
-            final String[] COMPANIES = new String[]{"ABC Corp", "Boople Inc", "Cabbages Pty Ltd", "Druggles MV"};
-            return COMPANIES[random.nextInt(COMPANIES.length)];
-        }
-
-        private String randomName() {
-            final String[] NAMES = new String[]{"Alex", "Betty", "Carlos", "Dietrich", "Edna"};
-            return NAMES[random.nextInt(NAMES.length)];
-        }
-
+       
         protected abstract void doJob(int i) throws Exception;
     }
 
     public static class CheckoutBuyer extends FakeTask {
         public CheckoutBuyer(ThreadContext context) {
-            super("buyItem", context);
+            super("selectitem", context);
         }
 
         @Override
@@ -234,7 +222,7 @@ public class Listenerdemo implements ServletContextListener {
 
     public static class EmailSender extends FakeTask {
         public EmailSender(ThreadContext context) {
-            super("sendMail", context);
+            super("insertitem", context);
         }
 
         @Override
