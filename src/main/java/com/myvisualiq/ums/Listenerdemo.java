@@ -34,6 +34,7 @@ import com.custardsource.parfait.timing.EventMetricCollector;
 import com.custardsource.parfait.timing.EventTimer;
 import com.custardsource.parfait.timing.InProgressExporter;
 import com.custardsource.parfait.timing.InProgressSnapshot;
+import com.custardsource.parfait.timing.StandardThreadMetrics;
 import com.custardsource.parfait.timing.ThreadContext;
 import com.custardsource.parfait.timing.ThreadMetric;
 import com.custardsource.parfait.timing.ThreadMetricSuite;
@@ -86,16 +87,23 @@ public class Listenerdemo implements ServletContextListener {
 		//bridge1.startMonitoring(coll);
 		
 		try {
+			
 			initContext = new InitialContext();
 			Context envContext = (Context) initContext.lookup("java:comp/env");
 		    ds = (DataSource) envContext.lookup("jdbc/EMP");
-		    Connection conn = ds.getConnection();
-		    st=conn.createStatement();
+		    //Connection conn = ds.getConnection();
+		    //st=conn.createStatement();
 		    
 			ParfaitDataSource parfaitDataSource=new ParfaitDataSource(ds); 
+			Connection conn=parfaitDataSource.getConnection();
+			st=conn.createStatement();
 		    Collection<ThreadMetric> jdbccoll=parfaitDataSource.getThreadMetrics();
 		    parfaitDataSource.setLogWriter(parfaitDataSource.getLogWriter());
 		    threadMetricSuite.addAllMetrics(jdbccoll);
+		//    threadMetricSuite.addMetric(StandardThreadMetrics.CLOCK_TIME);
+		//    threadMetricSuite.addMetric(StandardThreadMetrics.BLOCKED_TIME);
+		 //   threadMetricSuite.addMetric(StandardThreadMetrics.WAITED_TIME);
+		//    threadMetricSuite.addMetric(StandardThreadMetrics.USER_CPU_TIME);
 		    EventTimer eventTimer=new EventTimer("viqdemo", MonitorableRegistry.DEFAULT_REGISTRY, threadMetricSuite, enableCpuCollection, enableContentionCollection);
 		    //eventTimer.registerMetric(eventGroup);
 		   // EventMetricCollector evColl=eventTimer.getCollector();
@@ -106,15 +114,17 @@ public class Listenerdemo implements ServletContextListener {
 		    ThreadContext context = new ThreadContext();
 	        EmailSender sender = new EmailSender(context);
 	        CheckoutBuyer buyer = new CheckoutBuyer(context);
+	        sender.setEventTimer(eventTimer);
+	        buyer.setEventTimer(eventTimer);
 	        eventTimer.registerTimeable(sender, "sendEmail7");
 	        eventTimer.registerTimeable(buyer, "buySomething9");
 
 	        Thread t1 = new Thread(sender);
 	        Thread t2 = new Thread(buyer);
-
+	        bridge1.startMonitoring(MonitorableRegistry.DEFAULT_REGISTRY.getMonitorables());
 	        t1.start();
 	        t2.start();
-	        bridge1.startMonitoring(MonitorableRegistry.DEFAULT_REGISTRY.getMonitorables());
+	        
 	        InProgressExporter exporter = new InProgressExporter(eventTimer, context);
 
 	        for (int i = 1; i <= 5; i++) {
@@ -165,13 +175,18 @@ public class Listenerdemo implements ServletContextListener {
             EventMetricCollector collector = timer.getCollector();
             for (int i = 1; i < 30; i++) {
                 try {
+                	
                     context.put("Name", randomName());
                     context.put("Company", randomCompany());
                     collector.startTiming(this, action);
-                    ResultSet rs=st.executeQuery("select * from Employees");
+                   
                     doJob(i);
-                    
+                    collector.pauseForForward();
+                    collector.startTiming(this, "frog");
                     collector.stopTiming();
+                    collector.resumeAfterForward();
+                    collector.stopTiming();
+                    
                     context.remove("Name");
                     context.remove("Company");
                 } catch (Exception e) {
@@ -201,7 +216,7 @@ public class Listenerdemo implements ServletContextListener {
         @Override
         protected void doJob(int i) throws InterruptedException {
         	try {
-				ResultSet rs=st.executeQuery("select * from Employees");
+        		st.executeQuery("SELECT * from Employees");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -224,7 +239,7 @@ public class Listenerdemo implements ServletContextListener {
 
         @Override
         protected void doJob(int i) throws Exception {
-        	ResultSet rs=st.executeQuery("select * from Employees");
+        	st.execute("INSERT INTO Employees VALUES (102, 30, 'Zaid', 'Khan');");
             synchronized (LOCK) {
                 Thread.sleep(RANDOM.nextInt(400) + 400);
                 if (i >= 25) {
