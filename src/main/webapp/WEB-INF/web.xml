@@ -9,4 +9,14 @@
              com.myvisualiq.ums.Listenerdemo 
         </listener-class>
    </listener>
+  <servlet>
+  	<servlet-name>SampleServlet</servlet-name>
+  	<display-name>SampleServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.myvisualiq.ums.SampleServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>SampleServlet</servlet-name>
+  	<url-pattern>/SampleServlet</url-pattern>
+  </servlet-mapping>
 </web-app>

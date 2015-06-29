@@ -4,13 +4,18 @@
 
 </body>
 </html>
- <meta http-equiv="refresh" content="5">
+ <!--  <meta http-equiv="refresh" content="5">-->
 <%@ page import= "static com.myvisualiq.ums.Listenerdemo.*" %>
 <%@ page import="java.sql.*" %>
+
+ <form action="<%=request.getContextPath()%>/SampleServlet" method="post">
+    <input type="submit" name="button1" value="Increment" />
+    <input type="submit" name="button2" value="Decrement" />
+    <input type="submit" name="button3" value="Button 3" />
+</form>
  
 <% 
-  done.inc();
-  done2.dec();
+  
   out.println(" Increment :"+done.get()+", Decrement "+done2.get() );
   
   ResultSet rs=st.executeQuery("select * from Employees");

@@ -41,6 +41,7 @@ import com.custardsource.parfait.timing.ThreadMetricSuite;
 import com.custardsource.parfait.timing.Timeable;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static com.myvisualiq.ums.Listenerdemo.eventTimer;
 
 public class Listenerdemo implements ServletContextListener {
 	 private static final boolean enableCpuCollection = true;
@@ -67,6 +68,9 @@ public class Listenerdemo implements ServletContextListener {
 	 public static String eventGroup ="event";
 	 public static Statement st;
 	 public static EventMetricCollector evColl;
+	 public static Thread t3;
+	 
+	 public static EventTimer eventTimer;
 	 public ThreadMetricSuite threadMetricSuite=ThreadMetricSuite.blank();
 	 
 	 private final Map<String, EventTimer> eventTimers = newHashMap();
@@ -118,9 +122,12 @@ public class Listenerdemo implements ServletContextListener {
 	        buyer.setEventTimer(eventTimer);
 	        eventTimer.registerTimeable(sender, "insert");
 	        eventTimer.registerTimeable(buyer, "select");
-
+	        
+	        CheckoutBuyer selectbutton = new CheckoutBuyer(context);
+	        eventTimer.registerTimeable(selectbutton, "selectbutton");
 	        Thread t1 = new Thread(sender);
 	        Thread t2 = new Thread(buyer);
+	        Thread t3= new Thread(selectbutton);
 	        bridge1.startMonitoring(MonitorableRegistry.DEFAULT_REGISTRY.getMonitorables());
 	        t1.start();
 	        t2.start();
@@ -128,7 +135,7 @@ public class Listenerdemo implements ServletContextListener {
 	        InProgressExporter exporter = new InProgressExporter(eventTimer, context);
 
 	        for (int i = 1; i <= 5; i++) {
-	            Thread.sleep(1000);
+	            //Thread.sleep(1000);
 
 	            InProgressSnapshot snapshot = exporter.getSnapshot();
 	            System.out.println(snapshot.asFormattedString());
@@ -211,7 +218,7 @@ public class Listenerdemo implements ServletContextListener {
 			}
             if (i > 10 && i < 20) {
                 synchronized (LOCK) {
-                    Thread.sleep(RANDOM.nextInt(500) + 500);
+                  //  Thread.sleep(RANDOM.nextInt(500) + 500);
                 }
             } else {
                 Thread.sleep(RANDOM.nextInt(500) + 500);
@@ -229,7 +236,7 @@ public class Listenerdemo implements ServletContextListener {
         protected void doJob(int i) throws Exception {
         	st.execute("INSERT INTO Employees VALUES (102, 30, 'Zaid', 'Khan');");
             synchronized (LOCK) {
-                Thread.sleep(RANDOM.nextInt(400) + 400);
+               // Thread.sleep(RANDOM.nextInt(400) + 400);
                 if (i >= 25) {
                     for (int j = 0; j < 10000000; j++) {
                         System.out.print("");
